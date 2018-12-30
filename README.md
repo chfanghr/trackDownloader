@@ -7,7 +7,7 @@
 
 If you are end users,visit [release page](https://github.com/chfanghr/trackDownloader/releases) to download precompiled binary files.
 
-If you are developer,you may like to :
+If you are developers,you may like to :
 ```bash
 go get -u -v github.com/chfanghr/trackDownloader
 ```
