@@ -15,5 +15,5 @@ trackDownloader -h
 ``` 
 
 ## Known Bugs
-&emsp;&emsp;&emsp;&emsp;Currently the program only support to **view(not download)** playlist from
+Currently the program only support to **view(not download)** playlist from
 the login account.
