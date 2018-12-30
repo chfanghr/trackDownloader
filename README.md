@@ -7,8 +7,9 @@
 ```bash
 go get -u -v github.com/chfanghr/trackDownloader
 ```
-&emsp;&emsp;&emsp;&emsp;Also,you need ```vorbiscomment``` binary from ```vorbis-tools``` to add metadata to track.
-<br>&emsp;&emsp;&emsp;&emsp;To get help,run
+Also,you need ```vorbiscomment``` binary from ```vorbis-tools``` to add metadata to track.
+<br>
+<br>To get help,run
 ```bash
 trackDownloader -h
 ``` 
