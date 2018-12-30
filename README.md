@@ -24,4 +24,4 @@ Currently the program only support to **view(not download)** playlist from
 the login account.
 
 ## License
-MIT,view [LICENSE](LICENSE)for details.
+MIT,view [LICENSE](LICENSE) for details.
