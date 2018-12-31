@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Spotify"
+	"github.com/chfanghr/trackDownloader/Spotify"
 	"bytes"
 	"context"
 	"crypto/aes"
