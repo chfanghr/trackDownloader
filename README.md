@@ -1,4 +1,5 @@
 # trackDownloader
+# ALSO,FUCK WINDOWS
 
 **WARNING :THIS IS JUST A TOY**
 <br>**DON'T OVERUSE IT!!!!!!**
