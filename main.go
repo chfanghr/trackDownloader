@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/chfanghr/trackDownloader/Spotify"
 	"bytes"
 	"context"
 	"crypto/aes"
@@ -13,11 +12,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/chfanghr/trackDownloader/Spotify"
+	"github.com/chfanghr/trackDownloader/librespot"
+	"github.com/chfanghr/trackDownloader/librespot/core"
+	"github.com/chfanghr/trackDownloader/librespot/utils"
 	"io"
 	"io/ioutil"
-	"librespot"
-	"librespot/core"
-	"librespot/utils"
 	"log"
 	"math/rand"
 	"os"
