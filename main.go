@@ -54,7 +54,7 @@ var (
 	quality                = flag.Int("quality", 320, "quality of audio file")
 	viewRootPlaylist       = flag.Bool("viewRootPlaylists", false, "view root playlist or not")
 	quiet                  = flag.Bool("quiet", false, "output log to stdout or not")
-	windows                = flag.Bool("windows", false, "is windows or not")
+	//windows                = flag.Bool("windows", false, "is windows or not")
 )
 
 var (
@@ -461,10 +461,10 @@ func downloadTrackInternal(track *Spotify.Track) error {
 //}
 
 func setupLogger() {
-	if *windows {
-		logger = log.New(os.Stdout, *deviceName+" ", log.LstdFlags)
-		return
-	}
+	//if *windows {
+	//logger = log.New(os.Stdout, *deviceName+" ", log.LstdFlags)
+	//return
+	//}
 	nullDev, err := os.OpenFile(nullDevPath, os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalln("setup logger failed :", err)
