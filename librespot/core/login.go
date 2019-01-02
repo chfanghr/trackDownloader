@@ -18,7 +18,7 @@ var BuildID = "dev"
 var log *l.Logger
 
 func init() {
-	nulldev, err := os.OpenFile("/dev/null", os.O_APPEND|os.O_WRONLY, 0666)
+	nulldev, err := os.OpenFile(os.DevNull, os.O_APPEND|os.O_WRONLY, 0666)
 	if err != nil {
 		panic(err)
 	}
