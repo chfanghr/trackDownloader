@@ -23,6 +23,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"runtime"
 	"strings"
 	"sync"
 	"syscall"
@@ -459,7 +460,13 @@ func downloadTrackInternal(track *Spotify.Track) error {
 //}
 
 func setupLogger() {
-	nullDev, err := os.OpenFile("/dev/null", os.O_WRONLY|os.O_APPEND, 0666)
+	var nullDev *os.File
+	var err error
+	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
+		nullDev, err = os.OpenFile("/dev/null", os.O_WRONLY|os.O_APPEND, 0666)
+	} else if runtime.GOOS == "windows" {
+		nullDev, err = os.OpenFile("nul", os.O_WRONLY|os.O_APPEND, 0666)
+	}
 	if err != nil {
 		log.Fatalln("setup logger failed :", err)
 	}
