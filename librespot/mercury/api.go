@@ -1,11 +1,11 @@
 package mercury
 
 import (
-	"Spotify"
 	"encoding/json"
 	"fmt"
-	"github.com/golang/protobuf/proto"
+	"github.com/chfanghr/trackDownloader/Spotify"
 	"github.com/chfanghr/trackDownloader/librespot/metadata"
+	"github.com/golang/protobuf/proto"
 	"net/url"
 )
 
