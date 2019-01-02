@@ -54,6 +54,7 @@ var (
 	quality                = flag.Int("quality", 320, "quality of audio file")
 	viewRootPlaylist       = flag.Bool("viewRootPlaylists", false, "view root playlist or not")
 	quiet                  = flag.Bool("quiet", false, "output log to stdout or not")
+	usingWindowsNullDevice = flag.Bool("windowsNullDevice", false, "using Windows null device or not")
 )
 
 var (
@@ -65,6 +66,7 @@ var (
 	cancelFunc  context.CancelFunc       = nil
 	version                              = "DEBUG"
 	realQuality Spotify.AudioFile_Format = Spotify.AudioFile_OGG_VORBIS_160
+	nullDevPath                          = ""
 )
 
 func RandStringRunes(n int) string {
@@ -459,9 +461,8 @@ func downloadTrackInternal(track *Spotify.Track) error {
 //}
 
 func setupLogger() {
-	var nullDev *os.File
-	var err error
-	nullDev, err = os.OpenFile(os.DevNull, os.O_WRONLY|os.O_APPEND, 0666)
+	log.Println("using null device :", nullDevPath)
+	nullDev, err := os.OpenFile(nullDevPath, os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalln("setup logger failed :", err)
 	}
