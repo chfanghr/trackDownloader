@@ -55,6 +55,7 @@ var (
 	viewRootPlaylist       = flag.Bool("viewRootPlaylists", false, "view root playlist or not")
 	quiet                  = flag.Bool("quiet", false, "output log to stdout or not")
 	//windows                = flag.Bool("windows", false, "is windows or not")
+	downloadOneByOne = flag.Bool("oneByOne", true, "download one by one or not")
 )
 
 var (
@@ -229,7 +230,11 @@ func downloadTrack(id string) error {
 	if track.GetName() == "" {
 		return fmt.Errorf("error occur while loading track %s : fail to get track", id)
 	}
-	go downloadTrackInternal(track)
+	if *downloadOneByOne {
+		return downloadTrackInternal(track)
+	} else {
+		go downloadTrackInternal(track)
+	}
 	return nil
 }
 
