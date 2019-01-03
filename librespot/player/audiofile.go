@@ -40,6 +40,7 @@ type AudioFile struct {
 	cursor         int
 	chunks         map[int]bool
 	chunksLoading  bool
+	cancelled      bool
 }
 
 func newAudioFile(file *Spotify.AudioFile, player *Player) *AudioFile {
@@ -63,6 +64,10 @@ func newAudioFileWithIdAndFormat(fileId []byte, format Spotify.AudioFile_Format,
 // Size returns the size, in bytes, of the final audio file
 func (a *AudioFile) Size() uint32 {
 	return a.size - uint32(a.headerOffset())
+}
+
+func (a *AudioFile) Cancel() {
+	a.cancelled = true
 }
 
 // Read is an implementation of the io.Reader interface. Note that due to the nature of the streaming, we may return
@@ -275,6 +280,9 @@ func (a *AudioFile) loadChunk(chunkIndex int) error {
 }
 
 func (a *AudioFile) loadNextChunk() {
+	if a.cancelled {
+		return
+	}
 	a.chunkLock.Lock()
 
 	if a.chunksLoading {

@@ -3,12 +3,6 @@ package main
 import (
 	"bytes"
 	"context"
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/md5"
-	rand2 "crypto/rand"
-	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -19,7 +13,6 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -27,35 +20,6 @@ import (
 	"sync"
 	"syscall"
 	"time"
-)
-
-var (
-	authBufFile            = flag.String("authBufFile", "", "path to authBuffer file")
-	authBufPassword        = flag.String("authBufPassword", "", "Password of authBuffer file")
-	username               = flag.String("username", "", "name of Spotify account")
-	password               = flag.String("password", "", "Password of Spotify account")
-	deviceName             = flag.String("deviceName", "trackdl", "name of device")
-	logFile                = flag.String("logFile", "", "path to log file")
-	saveFileTo             = flag.String("saveFileTo", "./", "path to save audio file")
-	vorbisComment          = flag.String("vorbisComment", "./vorbiscomment", "path to vorbisComment executable file")
-	saveAuthBufTo          = flag.String("saveAuthBufTo", "", "path to save authBuffer")
-	saveAuthBufPassword    = flag.String("saveAuthBufPassword", RandStringRunes(5), "Password of saved authBuffer file")
-	targetsToSearch        = flag.String("search", "", "targets to search for,split by \",\"")
-	albumURIsToView        = flag.String("viewAlbum", "", "URIs of albums to view,split by \",\"")
-	trackURIsToView        = flag.String("viewTrack", "", "URIs of tracks to view,split by \",\"")
-	artistURIsToView       = flag.String("viewArtist", "", "URIs of artists to view,split by \",\"")
-	playlistURIsToView     = flag.String("viewPlaylist", "", "URIs of playlists to view,split by \",\"")
-	URLsToView             = flag.String("view", "", "URIs to view,begin with https://open.spotify.com/,split by \",\"")
-	trackURIsToDownload    = flag.String("downloadTrack", "", "URIs of tracks to download,split by \",\"")
-	albumURIsToDownload    = flag.String("downloadAlbum", "", "URIs of albums to download,split by \",\"")
-	playlistURIsToDownload = flag.String("downloadPlaylist", "", "URIs of playlists,split by \",\"")
-	URLsToDownload         = flag.String("download", "", "URIs to download,split by \",\"")
-	limitOfSearchResult    = flag.Int("searchResultLimit", 12, "limit of search result to shaw")
-	quality                = flag.Int("quality", 320, "quality of audio file")
-	viewRootPlaylist       = flag.Bool("viewRootPlaylists", false, "view root playlist or not")
-	quiet                  = flag.Bool("quiet", false, "output log to stdout or not")
-	//windows                = flag.Bool("windows", false, "is windows or not")
-	downloadOneByOne = flag.Bool("oneByOne", true, "download one by one or not")
 )
 
 var (
@@ -69,81 +33,6 @@ var (
 	realQuality Spotify.AudioFile_Format = Spotify.AudioFile_OGG_VORBIS_160
 	nullDevPath                          = os.DevNull
 )
-
-func RandStringRunes(n int) string {
-	rand.Seed(time.Now().UnixNano())
-	var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letterRunes[rand.Intn(len(letterRunes))]
-	}
-	return string(b)
-}
-
-type authBuf struct {
-	Username string `json:"Username"`
-	Password string `json:"Password"`
-}
-
-func (a *authBuf) createHash(key string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(key))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
-
-func (a *authBuf) encrypt(password string) ([]byte, error) {
-	buf, err := json.Marshal(a)
-	if err != nil {
-		return nil, errors.New("error occur while encrypt authBuf : " + err.Error())
-	}
-	block, _ := aes.NewCipher([]byte(a.createHash(password)))
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, errors.New("error occur while encrypt authBuf : " + err.Error())
-	}
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err := io.ReadFull(rand2.Reader, nonce); err != nil {
-		return nil, errors.New("error occur while encrypt authBuf : " + err.Error())
-	}
-	ciphertext := gcm.Seal(nonce, nonce, buf, nil)
-	return ciphertext, nil
-}
-
-func (a *authBuf) decrypt(password string, encrypted []byte) error {
-	key := []byte(a.createHash(password))
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return errors.New("error occur while decrypt authbuf : " + err.Error())
-	}
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return errors.New("error occur while decrypt authbuf : " + err.Error())
-	}
-	nonceSize := gcm.NonceSize()
-	nonce, ciphertext := encrypted[:nonceSize], encrypted[nonceSize:]
-	plaintext, err := gcm.Open(nil, nonce, ciphertext, nil)
-	err = json.Unmarshal(plaintext, a)
-	if err != nil {
-		return errors.New("error occur while decrypt authbuf : " + err.Error())
-	}
-	return nil
-}
-
-func (a *authBuf) GetPassword() string {
-	return a.Password
-}
-
-func (a *authBuf) GetUsername() string {
-	return a.Username
-}
-
-func (a *authBuf) SetPassword(p string) {
-	a.Password = p
-}
-
-func (a *authBuf) SetUsername(u string) {
-	a.Username = u
-}
 
 func downloadErrorHandler(err error) {
 	if err != nil {
@@ -238,238 +127,7 @@ func downloadTrack(id string) error {
 	return nil
 }
 
-func downloadTrackInternal(track *Spotify.Track) error {
-	downloadWaitGroup.Add(1)
-	defer downloadWaitGroup.Done()
-	ss := session
-
-	// show information of tack
-
-	logger.Println("Title :", track.GetName())
-	logger.Println("Album :", track.GetAlbum().GetName())
-	logger.Println("Artists :", func() string {
-		var res string
-		for i, artist := range track.GetAlbum().GetArtist() {
-			if i != 0 {
-				res += ","
-			}
-			res += artist.GetName()
-		}
-		return res
-	}())
-	logger.Println("External id :", func() string {
-		var res string
-		for i, eid := range track.GetExternalId() {
-			if i != 0 {
-				res += ","
-			}
-			res += "{ type : " + eid.GetTyp() + " , id : " + eid.GetId() + " }"
-		}
-		return res
-	}())
-
-	// select a file to download
-	var selectedFile *Spotify.AudioFile
-	for _, file := range track.GetFile() {
-		if file.GetFormat() == realQuality {
-			selectedFile = file
-		}
-	}
-
-	if selectedFile == nil {
-		logger.Println("failed to fetch", track.GetName(), ": cannot find audio file")
-		return nil
-	} else {
-		// fetch audio file
-		logger.Println(track.GetName(), "fetching audio file")
-		audioFile, err := ss.Player().LoadTrack(selectedFile, track.GetGid())
-		if err != nil {
-			return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
-		} else {
-			buf, err := ioutil.ReadAll(audioFile)
-			if err != nil {
-				return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
-			}
-			logger.Println(track.GetName(), "fetched successfully")
-
-			outputFile := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName() + "-" + RandStringRunes(10) + ".ogg"
-
-			err = ioutil.WriteFile(outputFile, buf, 0666)
-			if err != nil {
-				return fmt.Errorf("error occur while saving %s : %s", track.GetName(), err)
-			}
-
-			var metadata string
-			metadata = metadata + "ALBUM=" + track.Album.GetName() + "\n"
-			metadata = metadata + "ARTIST=" + func() string {
-				var res string
-				for i, artist := range track.GetAlbum().GetArtist() {
-					if i != 0 {
-						res += ","
-					}
-					res += artist.GetName()
-				}
-				return res
-			}() + "\n"
-			metadata = metadata + "TITLE=" + track.GetName() + "\n"
-			metadata = metadata + "GENRE=" + func() string {
-				var res string
-				for i, v := range track.Album.GetGenre() {
-					if i > 0 {
-						res += ","
-					}
-					res += v
-				}
-				return res
-
-			}() + "\n"
-			metadata = metadata + "DATE=" + track.GetAlbum().GetDate().String() + "\n"
-			metadata = metadata + "COPYRIGHT=" + func() string {
-				var res string
-				for i, v := range track.GetAlbum().GetCopyright() {
-					if i > 0 {
-						res += ","
-					}
-					res += v.GetText()
-				}
-				return res
-			}()
-
-			tmpMetadataFile := *saveFileTo + "/." + RandStringRunes(10) + ".metadata"
-			if version != "DEBUG" {
-				defer os.Remove(tmpMetadataFile)
-			}
-			err = ioutil.WriteFile(tmpMetadataFile, []byte(metadata), 0666)
-			if err != nil {
-				return fmt.Errorf("error occur while writing metadata to track %s : %s", track.GetName(), err)
-			}
-
-			vorbisCommentCommand := exec.Command(vorbisPath, "-a", outputFile, "-c", tmpMetadataFile)
-			err = vorbisCommentCommand.Run()
-
-			if err != nil {
-				return fmt.Errorf("error occur while writing metadata to track %s : %s", track.GetName(), err)
-			}
-
-			logger.Println(track.GetName(), "downloaded successfully")
-			return nil
-		}
-	}
-}
-
-//func downloadTrackInternal(track *Spotify.Track) error {
-//	downloadChan := func() chan error {
-//		ch := make(chan error)
-//		go func() {
-//			ch <- func() error {
-//				downloadWaitGroup.Add(1)
-//				defer downloadWaitGroup.Done()
-//				ss := session
-//
-//				// show information of tack
-//
-//				logger.Println("Title :", track.GetName())
-//				logger.Println("Album :", track.GetAlbum().GetName())
-//				logger.Println("Artists :", func() string {
-//					var res string
-//					for i, artist := range track.GetAlbum().GetArtist() {
-//						if i != 0 {
-//							res += ","
-//						}
-//						res += artist.GetName()
-//					}
-//					return res
-//				}())
-//				logger.Println("External id :", func() string {
-//					var res string
-//					for i, eid := range track.GetExternalId() {
-//						if i != 0 {
-//							res += ","
-//						}
-//						res += "{ type : " + eid.GetTyp() + " , id : " + eid.GetId() + " }"
-//					}
-//					return res
-//				}())
-//
-//				// select a file to download
-//				var selectedFile *Spotify.AudioFile
-//				for _, file := range track.GetFile() {
-//					if file.GetFormat() == Spotify.AudioFile_Format(*quality) {
-//						selectedFile = file
-//					}
-//				}
-//
-//				if selectedFile == nil {
-//					logger.Println("failed to fetch", track.GetName(), ": cannot find audio file")
-//					return nil
-//				} else {
-//					// fetch audio file
-//					logger.Println(track.GetName(), "fetching audio file")
-//					audioFile, err := ss.Player().LoadTrack(selectedFile, track.GetGid())
-//					if err != nil {
-//						return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
-//					} else {
-//						buf, err := ioutil.ReadAll(audioFile)
-//						if err != nil {
-//							return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
-//						}
-//						logger.Println(track.GetName(), "fetched successfully , save to tmp file")
-//
-//						// save to tmp file
-//						tmpFile := *saveFileTo + "/." + RandStringRunes(10) + ".ogg"
-//						err = ioutil.WriteFile(tmpFile, buf, 0666)
-//						if err != nil {
-//							return fmt.Errorf("error occur while saving tmp file of %s : %s", track.GetName(), err)
-//						}
-//						defer os.Remove(tmpFile)
-//
-//						// convert file
-//						// Why do I use syscall.ForkExec?
-//						// exec.run() seems to have some bugs
-//						// it never execute vorbisComment
-//						logger.Println(track.GetName(), "call vorbisComment to convert tmp file")
-//						ffmpegArgs := []string{vorbisPath, "-i", tmpFile, *saveFileTo + "/" + track.GetAlbum().GetName() + "_" + track.GetName() + "_" + RandStringRunes(10) + ".mp3"}
-//						workingDirectory, err := os.Getwd()
-//						if err != nil {
-//							return fmt.Errorf("error occur while converting %s : %s", track.GetName(), err)
-//						}
-//						pid, err := syscall.ForkExec(vorbisPath, ffmpegArgs, &syscall.ProcAttr{
-//							Dir: workingDirectory,
-//						})
-//						if err != nil {
-//							return fmt.Errorf("error occur while converting %s : %s", track.GetName(), err)
-//						}
-//						logger.Println(track.GetName(), "waiting for vorbisComment")
-//						process, err := os.FindProcess(pid)
-//						if err != nil {
-//							return fmt.Errorf("error occur while converting %s : %s", track.GetName(), err)
-//						}
-//						_, err = process.Wait()
-//						if err != nil {
-//							return fmt.Errorf("error occur while converting %s : %s", track.GetName(), err)
-//						}
-//
-//						logger.Println(track.GetName() + " converted successfully")
-//						return nil
-//					}
-//				}
-//			}()
-//		}()
-//		return ch
-//	}()
-//	select {
-//	case <-globalContext.Done():
-//		return errors.New("download job canceled")
-//	case err := <-downloadChan:
-//		return err
-//	}
-//}
-
 func setupLogger() {
-	//if *windows {
-	//logger = log.New(os.Stdout, *deviceName+" ", log.LstdFlags)
-	//return
-	//}
 	nullDev, err := os.OpenFile(nullDevPath, os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalln("setup logger failed :", err)
@@ -501,7 +159,7 @@ func login() {
 			logger.Fatalln("error occur while reading authBuffer file :", err)
 		}
 		ab := &authBuf{}
-		err = ab.decrypt(*authBufPassword, buf)
+		err = ab.Decrypt(*authBufPassword, buf)
 		if err != nil {
 			logger.Fatalln("error occur while reading authBuffer file :", err)
 		}
@@ -536,7 +194,7 @@ func login() {
 			Username: *username,
 			Password: *password,
 		}
-		buf, err := ab.encrypt(*saveAuthBufPassword)
+		buf, err := ab.Encrypt(*saveAuthBufPassword)
 		if err != nil {
 			logger.Println("error occur while saving authBuffer :", err)
 			return
