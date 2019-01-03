@@ -7,7 +7,7 @@ import (
 
 const CoverArtArchiveRootURL = "http://coverartarchive.org"
 
-type GetCoversWithMBIDResult struct {
+type GetCoverReleaseWithMBIDResult struct {
 	Images []struct {
 		Approved   bool   `json:"approved"`
 		Back       bool   `json:"back"`
@@ -28,8 +28,8 @@ type GetCoversWithMBIDResult struct {
 	Release string `json:"release"`
 }
 
-func GetCoversReleaseWithMBID(mbid string) (ress *GetCoversWithMBIDResult, err error) {
-	ress = &GetCoversWithMBIDResult{}
+func GetCoverReleaseWithMBID(mbid string) (ress *GetCoverReleaseWithMBIDResult, err error) {
+	ress = &GetCoverReleaseWithMBIDResult{}
 	url := CoverArtArchiveRootURL + "/release/" + mbid
 	request, err := http.NewRequest("GET", url, nil)
 	if err != nil {
