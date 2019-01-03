@@ -12,19 +12,19 @@ type GetCoverReleaseWithMBIDResult struct {
 		Approved   bool   `json:"approved"`
 		Back       bool   `json:"back"`
 		Comment    string `json:"comment"`
-		Edit       int64  `json:"edit"`
+		Edit       int    `json:"edit"`
 		Front      bool   `json:"front"`
-		Id         int64  `json:"id"`
+		ID         int64  `json:"id"`
 		Image      string `json:"image"`
 		Thumbnails struct {
-			Q1200 string `json:"1200"`
-			Q250  string `json:"250"`
-			Q500  string `json:"500"`
-			Large string `json:"large"`
-			Small string `json:"small"`
+			Num250  string `json:"250"`
+			Num500  string `json:"500"`
+			Num1200 string `json:"1200"`
+			Large   string `json:"large"`
+			Small   string `json:"small"`
 		} `json:"thumbnails"`
 		Types []string `json:"types"`
-	}
+	} `json:"images"`
 	Release string `json:"release"`
 }
 
@@ -36,7 +36,8 @@ func GetCoverReleaseWithMBID(mbid string) (ress *GetCoverReleaseWithMBIDResult, 
 		return nil, err
 	}
 	request.Header.Add("Accept", "application/json")
-	res, err := http.DefaultClient.Do(request)
+	client := &http.Client{}
+	res, err := client.Do(request)
 	if err != nil {
 		return nil, err
 	}

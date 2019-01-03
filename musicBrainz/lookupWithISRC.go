@@ -24,7 +24,9 @@ func LookupWithISRC(ISRC string) (ress *LookupISRCResult, err error) {
 		return nil, err
 	}
 	request.Header.Add("Accept", "application/json")
-	res, err := http.DefaultClient.Do(request)
+
+	client := &http.Client{}
+	res, err := client.Do(request)
 	if err != nil {
 		return nil, err
 	}
