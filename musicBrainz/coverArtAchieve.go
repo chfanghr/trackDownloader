@@ -1,8 +1,8 @@
-package coverArtAchieve
+package musicBrainz
 
 import "fmt"
 
-const RootURL = "https://coverartarchive.org"
+const CoverArtAPIRootURL = "https://coverartarchive.org"
 
 type ErrStatusCode struct {
 	code int

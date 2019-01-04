@@ -1,4 +1,4 @@
-package coverArtAchieve
+package musicBrainz
 
 import (
 	"encoding/json"
@@ -29,7 +29,7 @@ type ReleaseGroup struct {
 
 func GetReleaseGroupCoverArt(mbid string) (rel ReleaseGroup, err error) {
 	cli := &http.Client{}
-	url := RootURL + "/release-group/" + mbid
+	url := CoverArtAPIRootURL + "/release-group/" + mbid
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -51,7 +51,7 @@ func GetReleaseGroupCoverArt(mbid string) (rel ReleaseGroup, err error) {
 
 func GetReleaseGroupFrontCoverArt(mbid string) (buf []byte, err error) {
 	cli := &http.Client{}
-	url := RootURL + "/release-group/" + mbid + "/front"
+	url := CoverArtAPIRootURL + "/release-group/" + mbid + "/front"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -76,7 +76,7 @@ func GetReleaseGroupFrontCoverArtWithSize(mbid, size string) (buf []byte, err er
 	}
 
 	cli := &http.Client{}
-	url := RootURL + "/release-group/" + mbid + "/front-" + size
+	url := CoverArtAPIRootURL + "/release-group/" + mbid + "/front-" + size
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
