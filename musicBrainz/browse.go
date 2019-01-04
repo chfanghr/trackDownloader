@@ -1,6 +1,10 @@
 package musicBrainz
 
-import "strings"
+import (
+	"fmt"
+	"net/http"
+	"strings"
+)
 
 var possibleReleaseStatus = []string{"official", "promotion", "bootleg", "pseudo-release"}
 
@@ -141,4 +145,81 @@ var possibleBrowseEntity = map[string]struct {
 			return
 		}()...),
 	},
+}
+
+func BuildBrowseRequest(entity string, param struct {
+	linkedEntityAndValue []struct {
+		linkedEntity string
+		value        string
+	}
+	offset string
+	limit  string
+	inc    []string
+
+	filterByType   string
+	filterByStatus string
+}) (req *http.Request, err error) {
+	if _, ok := possibleBrowseEntity[entity]; !ok {
+		err = fmt.Errorf("unsuportted entity %s", entity)
+		return
+	}
+	var url string = APIRoot + "/" + entity
+	var query string
+	if len(param.linkedEntityAndValue) > 0 {
+		var tmp string
+		for _, v := range param.linkedEntityAndValue {
+			if v.linkedEntity == "" {
+				continue
+			}
+			if !isStringInStrings(v.linkedEntity, possibleBrowseEntity[entity].linkedEntity...) {
+				err = fmt.Errorf("unsupported linked entity %s for entity %s", v.linkedEntity, entity)
+				return
+			}
+			if tmp != "" {
+				tmp += "&"
+			}
+			tmp = tmp + v.linkedEntity + "=" + v.value
+		}
+		if tmp != "" {
+			query += tmp
+		}
+	}
+	if len(param.inc) > 0 {
+		var incs string
+		for _, v := range param.inc {
+			if v == "" {
+				continue
+			}
+			if !isStringInStrings(v, possibleBrowseEntity[entity].inc...) {
+				err = fmt.Errorf("unsupported inc %s for entity %s", v, entity)
+				return
+			}
+			if incs != "" {
+				incs += "+"
+			}
+			incs += v
+		}
+		if incs != "" {
+			if query != "" {
+				query += "&"
+			}
+			query += incs
+		}
+	}
+	if param.offset != "" {
+		if query != "" {
+			query += "&"
+		}
+		query = query + "offset=" + param.offset
+	}
+	if param.limit != "" {
+		if query != "" {
+			query += "&"
+		}
+		query = query + "limit=" + param.limit
+	}
+	if query != "" {
+		url = url + "?" + query
+	}
+	return
 }
