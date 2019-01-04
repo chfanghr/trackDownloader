@@ -2,7 +2,7 @@ package musicBrainz
 
 import "fmt"
 
-const CoverArtAPIRootURL = "https://coverartarchive.org"
+const CoverArtAPIRoot = "https://coverartarchive.org"
 
 type ErrStatusCode struct {
 	code int

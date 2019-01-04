@@ -29,7 +29,7 @@ type Release struct {
 
 func GetReleaseCoverArt(mbid string) (rel Release, err error) {
 	cli := &http.Client{}
-	url := CoverArtAPIRootURL + "/release/" + mbid
+	url := CoverArtAPIRoot + "/release/" + mbid
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -51,7 +51,7 @@ func GetReleaseCoverArt(mbid string) (rel Release, err error) {
 
 func GetReleaseFrontCoverArt(mbid string) (buf []byte, err error) {
 	cli := &http.Client{}
-	url := CoverArtAPIRootURL + "/release/" + mbid + "/front"
+	url := CoverArtAPIRoot + "/release/" + mbid + "/front"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -72,7 +72,7 @@ func GetReleaseFrontCoverArt(mbid string) (buf []byte, err error) {
 
 func GetReleaseBackCoverArt(mbid string) (buf []byte, err error) {
 	cli := &http.Client{}
-	url := CoverArtAPIRootURL + "/release/" + mbid + "/back"
+	url := CoverArtAPIRoot + "/release/" + mbid + "/back"
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
