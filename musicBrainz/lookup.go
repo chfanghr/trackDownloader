@@ -90,13 +90,15 @@ func BuildNonMBIDLookupRequest(entity, id string, inc ...string) (req *http.Requ
 	return http.NewRequest("GET", url, nil)
 }
 
-func BuildDiscidLookupRequest(discid string, param struct {
-	inc []string
-	toc []string
-}) (req *http.Request, err error) {
+type BuildLookupDiscidRequesParam struct {
+	Inc []string
+	Toc []string
+}
+
+func BuildLookupDiscidRequest(discid string, param BuildLookupDiscidRequesParam) (req *http.Request, err error) {
 	var url = APIRoot + "/discid/"
 	if discid == "" {
-		if !(len(param.inc) > 0 && len(param.toc) > 0) {
+		if !(len(param.Inc) > 0 && len(param.Toc) > 0) {
 			err = fmt.Errorf("one of discid and param should be non-empty")
 			return
 		}
@@ -105,9 +107,9 @@ func BuildDiscidLookupRequest(discid string, param struct {
 		url += discid
 	}
 	var ext string
-	if len(param.inc) > 0 {
+	if len(param.Inc) > 0 {
 		var extInc string
-		for _, v := range param.inc {
+		for _, v := range param.Inc {
 			if v == "" {
 				continue
 			}
@@ -121,9 +123,9 @@ func BuildDiscidLookupRequest(discid string, param struct {
 			ext += extInc
 		}
 	}
-	if len(param.toc) > 0 {
+	if len(param.Toc) > 0 {
 		var extToc string
-		for _, v := range param.inc {
+		for _, v := range param.Inc {
 			if v == "" {
 				continue
 			}
