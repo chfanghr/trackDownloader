@@ -5,38 +5,24 @@ import (
 	"net/http"
 )
 
-type LookupResult struct {
-	EndArea  interface{} `json:"end_area"`
-	Name     string      `json:"name"`
-	GenderID interface{} `json:"gender-id"`
-	SortName string      `json:"sort-name"`
-	LifeSpan struct {
-		End   string `json:"end"`
-		Ended bool   `json:"ended"`
-		Begin string `json:"begin"`
-	} `json:"life-span"`
-	ID   string `json:"id"`
-	Area struct {
-		SortName       string   `json:"sort-name"`
-		ID             string   `json:"id"`
-		Disambiguation string   `json:"disambiguation"`
-		Iso31661Codes  []string `json:"iso-3166-1-codes"`
-		Name           string   `json:"name"`
-	} `json:"area"`
-	TypeID         string        `json:"type-id"`
-	Country        string        `json:"country"`
-	Disambiguation string        `json:"disambiguation"`
-	Gender         interface{}   `json:"gender"`
-	Type           string        `json:"type"`
-	Isnis          []string      `json:"isnis"`
-	Ipis           []interface{} `json:"ipis"`
-	BeginArea      struct {
-		ID             string `json:"id"`
-		SortName       string `json:"sort-name"`
-		Name           string `json:"name"`
-		Disambiguation string `json:"disambiguation"`
-	} `json:"begin_area"`
+var possibleLookupEntityAndInc = map[string][]string{
+	"area":          []string{},
+	"artist":        []string{"recordings", "releases", "release-groups", "works"},
+	"event":         []string{},
+	"instrument":    []string{},
+	"label":         []string{"releases"},
+	"place":         []string{},
+	"recording":     []string{"artists", "releases", "recording-level-rels", "work-level-rels"},
+	"release":       []string{"artists", "collections", "labels", "recordings", "release-groups"},
+	"release-group": []string{"artists", "releases"},
+	"series":        []string{},
+	"work":          []string{},
+	"url":           []string{},
 }
+
+var possibleLookupIncForAllEntity = []string{"discids", "media", "isrcs", "artist-credit", "various-artists", "aliases", "annotation", "tags", "ratings", "area-rels", "artist-rels", "event-rels", "instrument-rels", "label-rels", "place-rels", "recording-rels", "release-rels", "release-group-rels", "series-rels", "url-rels", "work-rels"}
+
+var possibleNonMBIDLookupEntity = []string{"isrc", "iswc"}
 
 func BuildLookupRequest(entity, mbid string, inc ...string) (req *http.Request, err error) {
 	var url string
@@ -44,74 +30,118 @@ func BuildLookupRequest(entity, mbid string, inc ...string) (req *http.Request, 
 		err = fmt.Errorf("mbid shouldn't be empty")
 		return
 	}
-	if !isStringInStrings(entity, "area", "artist", "event", "instrument", "label", "place", "recording", "release", "release-group", "series", "work", "url") {
+	if _, ok := possibleLookupEntityAndInc[entity]; !ok {
 		err = fmt.Errorf("invalid entity %s", entity)
 		return
 	}
-	url = fmt.Sprintf("%s/%s", APIRoot, entity)
+	url = APIRoot + "/" + entity + "/" + mbid
 	if len(inc) > 0 {
 		var incs string
 		for _, v := range inc {
-			switch entity {
-			case "artist":
-				if isStringInStrings(v, "recordings", "releases", "release-groups", "works") {
-					break
+			if v == "" {
+				continue
+			}
+			if !isStringInStrings(v, possibleLookupIncForAllEntity...) {
+				if isStringInStrings(v, possibleLookupEntityAndInc[entity]...) {
+					err = fmt.Errorf("unspported inc %s for entity %s", v, entity)
+					return
 				}
-			case "collection":
-				if isStringInStrings(v, "user-collections") {
-					break
-				}
-			case "label":
-				if isStringInStrings(v, "releases") {
-					break
-				}
-			case "recording":
-				if isStringInStrings(v, "artists", "releases") {
-					break
-				}
-			case "release":
-				if isStringInStrings(v, "artists", "collections", "labels", "recordings", "release-groups") {
-					break
-				}
-			case "release-group":
-				if isStringInStrings(v, "artists", "releases") {
-					break
-				}
-			default:
-				err = fmt.Errorf("unspported inc %s for entity %s", v, entity)
-				return
 			}
 			if incs != "" {
 				incs += "+"
 			}
 			incs += v
 		}
-		incs = "?inc=" + incs
-		url += incs
+		if incs != "" {
+			incs = "?inc=" + incs
+			url += incs
+		}
 	}
-	req, err = http.NewRequest("GET", url, nil)
-	if err != nil {
-		return
-	}
-	req.Header.Add("Accept", "application/json")
-	return
+	return http.NewRequest("GET", url, nil)
 }
 
-func BuildNonMBIDLookups(entity, value string, inc ...string) (req *http.Request, err error) {
+func BuildNonMBIDLookupRequest(entity, id string, inc ...string) (req *http.Request, err error) {
 	var url string
-	if value == "" {
-		err = fmt.Errorf("value shouldn't be empty")
+	if id == "" {
+		err = fmt.Errorf("id shouldn't be empty")
 		return
 	}
-	if !isStringInStrings(entity, "isrc", "iswc") {
+	if !isStringInStrings(entity, possibleNonMBIDLookupEntity...) {
 		err = fmt.Errorf("unsupported entity")
 		return
 	}
-	url = APIRoot + "/" + value
-	req, err = http.NewRequest("GET", url, nil)
-	if err != nil {
-		return
+	url = APIRoot + "/" + id
+	if len(inc) > 0 {
+		var incs string
+		for _, v := range inc {
+			if v == "" {
+				continue
+			}
+			if incs != "" {
+				incs += "+"
+			}
+			incs += v
+		}
+		if incs != "" {
+			incs = "?inc=" + incs
+			url += incs
+		}
 	}
-	req.Header.Add("Accept", "application/json")
-	return
+	return http.NewRequest("GET", url, nil)
+}
+
+func BuildDiscidLookupRequest(discid string, param struct {
+	inc []string
+	toc []string
+}) (req *http.Request, err error) {
+	var url = APIRoot + "/discid/"
+	if discid == "" {
+		if !(len(param.inc) > 0 && len(param.toc) > 0) {
+			err = fmt.Errorf("one of discid and param should be non-empty")
+			return
+		}
+		url += "-"
+	} else {
+		url += discid
+	}
+	var ext string
+	if len(param.inc) > 0 {
+		var extInc string
+		for _, v := range param.inc {
+			if v == "" {
+				continue
+			}
+			if extInc != "" {
+				extInc += "+"
+			}
+			extInc += v
+		}
+		if extInc != "" {
+			ext += "inc="
+			ext += extInc
+		}
+	}
+	if len(param.toc) > 0 {
+		var extToc string
+		for _, v := range param.inc {
+			if v == "" {
+				continue
+			}
+			if extToc != "" {
+				extToc += "+"
+			}
+			extToc += v
+		}
+		if extToc != "" {
+			if ext != "" {
+				ext += "&"
+			}
+			ext += "toc="
+			ext += extToc
+		}
+	}
+	if ext != "" {
+		url = "?" + ext
+	}
+	return http.NewRequest("GET", url, nil)
 }
