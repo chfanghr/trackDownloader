@@ -1,3 +1,5 @@
+// visit https://beta.musicbrainz.org/doc/Development/XML_Web_Service/ for details
+
 package musicBrainz
 
 import (

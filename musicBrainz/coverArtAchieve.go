@@ -1,3 +1,5 @@
+//Visit https://beta.musicbrainz.org/doc/Cover_Art_Archive/API for details
+
 package musicBrainz
 
 import "fmt"
