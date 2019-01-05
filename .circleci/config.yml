@@ -6,6 +6,8 @@ jobs:
     steps:
       - checkout
       - run: go get -v -u github.com/chfanghr/trackDownloader/...
+      - run: go install -v -ldflags '-X main.version=0.0.1beta.x' github.com/chfanghr/trackDownloader
+      - run: $HOME/go/bin/trackDownloader
 workflows:
   version: 2
   build_and_test:
