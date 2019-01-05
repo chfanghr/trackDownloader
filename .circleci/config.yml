@@ -1,0 +1,19 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.11.4
+    steps:
+      - checkout
+      - run: echo "master"
+  test:
+    docker:
+      - image: circleci/golang:1.11.4
+    steps:
+      - checkout
+      - run: echo "hello world"
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
