@@ -1,5 +1,5 @@
 # trackDownloader
-# ALSO,FUCK WINDOWS
+[![CircleCI](https://circleci.com/gh/chfanghr/trackDownloader.svg?style=svg)](https://circleci.com/gh/chfanghr/trackDownloade
 
 **WARNING :THIS IS JUST A TOY**
 <br>**DON'T OVERUSE IT!!!!!!**
