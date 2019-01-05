@@ -113,7 +113,7 @@ type RecordingInformation struct {
 	} `json:"tags"`
 }
 
-func SearchReleaseWithIsrc(isrc string) (ri []RecordingInformation, err error) {
+func SearchReleaseWithIsrc(isrc, limit, offset string) (ri []RecordingInformation, err error) {
 	type resultType struct {
 		Created    time.Time              `json:"created"`
 		Count      int                    `json:"count"`
@@ -122,7 +122,10 @@ func SearchReleaseWithIsrc(isrc string) (ri []RecordingInformation, err error) {
 	}
 
 	var res resultType
-	req, err := BuildSearchRequest("recording", "isrc:"+isrc, "50", "")
+	if limit == "" {
+		limit = "100"
+	}
+	req, err := BuildSearchRequest("recording", "isrc:"+isrc, limit, offset)
 	if err != nil {
 		return
 	}
@@ -141,4 +144,17 @@ func SearchReleaseWithIsrc(isrc string) (ri []RecordingInformation, err error) {
 	}
 	ri = res.Recordings
 	return
+}
+
+func SearchMostSimilarRelease(infos []RecordingInformation, date, title, artist, releaseGroupType, releaseGroup, ReleaseStatus, ReleaseType string) (id string, err error) {
+	type releaseInfo struct {
+		title                          string
+		status                         string
+		date                           string
+		releaseGroup, releaseGroupType string
+		releaseStatus, releaseType     string
+		artist                         string
+	}
+	//TODO:
+	panic("Implement me")
 }
