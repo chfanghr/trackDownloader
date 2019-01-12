@@ -213,7 +213,7 @@ func login() {
 //}
 
 func checkVorbisCommment() {
-	logger.Println("check vorbisComment")
+	logger.Println("checking vorbisComment")
 	if *vorbisComment == "" {
 		logger.Fatalln("please provide a valid path to vorbisComment executable file")
 	} else {
