@@ -2,11 +2,12 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/golang:1.11.4
+      - image: circleci/golang:1.12
+    working_directory: /trackDownloader
     steps:
       - checkout
-      - run: go get -v -u github.com/chfanghr/trackDownloader/...
-      - run: go install -v -ldflags '-X main.version=0.0.1beta.x' github.com/chfanghr/trackDownloader
+      - run: sudo chmod -R +x ./.circleci/*.sh
+      - run: .circleci/build.sh
 workflows:
   version: 2
   build_and_test:
