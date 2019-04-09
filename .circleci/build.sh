@@ -2,7 +2,7 @@
 
 sudo mkdir /build
 sudo chmod +666 /build
-GO111MODULE=on go get -v -d ./...
+GO111MODULE=on go get -d ./...
 
 go_build(){
 GO111MODULE=on GOOS=$1 GOARCH=$2 go build -o /build/$1_$2 $3
