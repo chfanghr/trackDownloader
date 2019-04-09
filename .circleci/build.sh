@@ -17,5 +17,7 @@ go_build "windows" "386" $1
 go_build "darwin" "amd64" $1
 go_build "darwin" "386" $1
 
+for i in windows*;do mv $i $i.exe; done
+
 tar -cf /tmp/build.tar /build
 mv /tmp/build.tar /build
