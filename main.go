@@ -30,7 +30,7 @@ var (
 	//globalContext     context.Context    = nil
 	cancelFunc  context.CancelFunc       = nil
 	version                              = "DEBUG"
-	realQuality Spotify.AudioFile_Format = Spotify.AudioFile_OGG_VORBIS_160
+	realQuality Spotify.AudioFile_Format = Spotify.AudioFile_OGG_VORBIS_320
 	nullDevPath                          = os.DevNull
 )
 
