@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/chfanghr/trackDownloader/Spotify"
+	"github.com/chfanghr/librespot/Spotify"
 	"io/ioutil"
 	"os"
 	"os/exec"

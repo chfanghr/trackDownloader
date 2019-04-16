@@ -6,10 +6,10 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/chfanghr/trackDownloader/Spotify"
-	"github.com/chfanghr/trackDownloader/librespot"
-	"github.com/chfanghr/trackDownloader/librespot/core"
-	"github.com/chfanghr/trackDownloader/librespot/utils"
+	"github.com/chfanghr/librespot/Spotify"
+	"github.com/chfanghr/librespot"
+	"github.com/chfanghr/librespot/core"
+	"github.com/chfanghr/librespot/utils"
 	"io"
 	"io/ioutil"
 	"log"
@@ -691,7 +691,7 @@ func main() {
 	setupLogger()
 	logger.Println("program version :", version)
 	logger.Println("warning : at this time the program only support current user's playlist")
-	logger.Println("source code hosted on https://github.com/chfanghr/trackDownloader")
+	logger.Println("source code hosted on https://github.com/chfanghr")
 	login()
 
 	if *viewRootPlaylist {
