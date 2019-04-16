@@ -105,7 +105,7 @@ func downloadAlbums() {
 				}
 				*trackURIsToDownload += utils.ConvertTo62(t.GetGid())
 			}
-		}
+	}
 	}
 }
 
@@ -158,14 +158,15 @@ func login() {
 		if err != nil {
 			logger.Fatalln("error occur while reading authBuffer file :", err)
 		}
-		ab := &authBuf{}
-		err = ab.Decrypt(*authBufPassword, buf)
-		if err != nil {
-			logger.Fatalln("error occur while reading authBuffer file :", err)
-		}
-		*username = ab.GetUsername()
-		*password = ab.GetPassword()
+		//ab := &authBuf{}
+		//err = ab.Decrypt(*authBufPassword, buf)
+		//if err != nil {
+		//	logger.Fatalln("error occur while reading authBuffer file :", err)
+		//}
+		*username ,*password ,err=  UnpackAuthBuf(buf)
 		logger.Println(*username, "login with authBuffer")
+		  if err != nil {
+		                  logger.Fatalln("error occur while reading authBuffer file :", err)                        }
 	} else {
 		if *username == "" {
 			logger.Fatalln("please provide a nonempty username")
@@ -190,11 +191,12 @@ func login() {
 	logger.Println(*username, "logged in successfully")
 	if *saveAuthBufTo != "" {
 		logger.Println("save authBuffer with Password :", *saveAuthBufPassword)
-		ab := &authBuf{
-			Username: *username,
-			Password: *password,
-		}
-		buf, err := ab.Encrypt(*saveAuthBufPassword)
+		//ab := &authBuf{
+		//	Username: *username,
+		//	Password: *password,
+		//}
+		//buf, err := ab.Encrypt(*saveAuthBufPassword)
+		buf,err:=PackAuthBuf(*username,*password,*saveAuthBufPassword)
 		if err != nil {
 			logger.Println("error occur while saving authBuffer :", err)
 			return
