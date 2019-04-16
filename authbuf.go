@@ -96,8 +96,8 @@ func PackAuthBuf(username, password, abpassword string) (res []byte, err error) 
 
 func UnpackAuthBuf(dt []byte) (username, password string, err error) {
 	pl := binary.BigEndian.Uint32(dt)
-	ps := dt[3 : 3+pl]
-	abb := dt[3+pl:]
+	ps := dt[4 : 4+pl]
+	abb := dt[4+pl:]
 	ab := &authBuf{}
 	err = ab.Decrypt(string(ps), abb)
 	if err != nil {
