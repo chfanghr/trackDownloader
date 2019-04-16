@@ -8,4 +8,4 @@ jobs:
       - run: sudo chmod -R +x ./.circleci/*.sh
       - run: .circleci/build.sh .
       - store_artifacts: 
-          path: /build/build.tar
+          path: /build
