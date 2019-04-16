@@ -1,12 +1,12 @@
 package mercury
 
 import (
-	"github.com/chfanghr/trackDownloader/Spotify"
 	"encoding/binary"
-	"github.com/golang/protobuf/proto"
+	"github.com/chfanghr/trackDownloader/Spotify"
 	"github.com/chfanghr/trackDownloader/librespot/connection"
 	"github.com/chfanghr/trackDownloader/librespot/core"
 	"github.com/chfanghr/trackDownloader/librespot/spirc"
+	"github.com/golang/protobuf/proto"
 	"testing"
 )
 

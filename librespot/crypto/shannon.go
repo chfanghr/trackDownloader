@@ -3,8 +3,8 @@ package crypto
 import (
 	"bytes"
 	"encoding/binary"
-	"io"
 	"github.com/chfanghr/trackDownloader/librespot/connection"
+	"io"
 	"log"
 	"sync"
 )

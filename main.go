@@ -105,7 +105,7 @@ func downloadAlbums() {
 				}
 				*trackURIsToDownload += utils.ConvertTo62(t.GetGid())
 			}
-	}
+		}
 	}
 }
 
@@ -163,10 +163,11 @@ func login() {
 		//if err != nil {
 		//	logger.Fatalln("error occur while reading authBuffer file :", err)
 		//}
-		*username ,*password ,err=  UnpackAuthBuf(buf)
+		*username, *password, err = UnpackAuthBuf(buf)
 		logger.Println(*username, "login with authBuffer")
-		  if err != nil {
-		                  logger.Fatalln("error occur while reading authBuffer file :", err)                        }
+		if err != nil {
+			logger.Fatalln("error occur while reading authBuffer file :", err)
+		}
 	} else {
 		if *username == "" {
 			logger.Fatalln("please provide a nonempty username")
@@ -196,7 +197,7 @@ func login() {
 		//	Password: *password,
 		//}
 		//buf, err := ab.Encrypt(*saveAuthBufPassword)
-		buf,err:=PackAuthBuf(*username,*password,*saveAuthBufPassword)
+		buf, err := PackAuthBuf(*username, *password, *saveAuthBufPassword)
 		if err != nil {
 			logger.Println("error occur while saving authBuffer :", err)
 			return

@@ -5,11 +5,11 @@ import (
 	"crypto/cipher"
 	"crypto/md5"
 	"crypto/rand"
+	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"io"
-	"encoding/binary"
 )
 
 type authBuf struct {
@@ -77,34 +77,33 @@ func (a *authBuf) SetUsername(u string) {
 	a.Username = u
 }
 
-func PackAuthBuf(username,password,abpassword string)(res []byte,err error){
-	ab:=&authBuf{
-		Username:username,
-		Password:password,
+func PackAuthBuf(username, password, abpassword string) (res []byte, err error) {
+	ab := &authBuf{
+		Username: username,
+		Password: password,
 	}
-	eb,err:=ab.Encrypt(abpassword)
-	if err!=nil{
-		return nil,err
+	eb, err := ab.Encrypt(abpassword)
+	if err != nil {
+		return nil, err
 	}
-	bui:=make([]byte,4)
-	binary.BigEndian.PutUint32(bui,uint32(len(abpassword)))
-	res=append(res,bui...)
-	res=append(res,[]byte(abpassword)...)
-	res=append(res,eb...)
+	bui := make([]byte, 4)
+	binary.BigEndian.PutUint32(bui, uint32(len(abpassword)))
+	res = append(res, bui...)
+	res = append(res, []byte(abpassword)...)
+	res = append(res, eb...)
 	return
 }
 
-func UnpackAuthBuf(dt []byte)(username,password string,err error){
-	pl:=binary.BigEndian.Uint32(dt)
-	ps:=dt[3:3+pl]
-	abb:=dt[3+pl:]
-	ab:=&authBuf{}
-	err=ab.Decrypt(string(ps),abb)
-	if err!=nil{
+func UnpackAuthBuf(dt []byte) (username, password string, err error) {
+	pl := binary.BigEndian.Uint32(dt)
+	ps := dt[3 : 3+pl]
+	abb := dt[3+pl:]
+	ab := &authBuf{}
+	err = ab.Decrypt(string(ps), abb)
+	if err != nil {
 		return
 	}
-	username=ab.Username
-	password=ab.Password
+	username = ab.Username
+	password = ab.Password
 	return
 }
-

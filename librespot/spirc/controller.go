@@ -1,13 +1,13 @@
 package spirc
 
 import (
-	"github.com/chfanghr/trackDownloader/Spotify"
 	"errors"
 	"fmt"
-	"github.com/golang/protobuf/proto"
+	"github.com/chfanghr/trackDownloader/Spotify"
 	"github.com/chfanghr/trackDownloader/librespot/core"
 	"github.com/chfanghr/trackDownloader/librespot/mercury"
 	"github.com/chfanghr/trackDownloader/librespot/utils"
+	"github.com/golang/protobuf/proto"
 	"strings"
 	"sync"
 )
