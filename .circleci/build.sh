@@ -19,5 +19,5 @@ go_build "darwin" "386" $1
 
 for i in /build/windows*;do mv $i $i.exe; done
 
-tar -cf /tmp/build.tar /build
-mv /tmp/build.tar /build
+#tar -cf /tmp/build.tar /build
+#mv /tmp/build.tar /build
