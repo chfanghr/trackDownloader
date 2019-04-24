@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/chfanghr/librespot/Spotify"
 	"io/ioutil"
 	"os"
 	"os/exec"
+
+	"github.com/chfanghr/librespot/Spotify"
 )
 
 type Track struct {
@@ -122,9 +123,9 @@ func downloadTrackInternal(track *Spotify.Track) error {
 			}()
 
 			tmpMetadataFile := *saveFileTo + "/." + RandStringRunes(10) + ".metadata"
-			if version != "DEBUG" {
-				defer os.Remove(tmpMetadataFile)
-			}
+			//if version != "DEBUG" {
+			defer os.Remove(tmpMetadataFile)
+			//}
 			err = ioutil.WriteFile(tmpMetadataFile, []byte(metadata), 0666)
 			if err != nil {
 				return fmt.Errorf("error occur while writing metadata to track %s : %s", track.GetName(), err)
