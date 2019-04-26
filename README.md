@@ -27,5 +27,5 @@ the login account.
 ## License
 MIT,view [LICENSE](LICENSE) for details.
 
-## [Builds](https:/circleci.com/api/v1.1/project/github/chfanghr/trackDownloader/latest/artifacts?filter=successful)
+## [Builds](https://circleci.com/api/v1.1/project/github/chfanghr/trackDownloader/latest/artifacts?filter=successful)
 Click to download nightly build.
