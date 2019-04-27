@@ -41,27 +41,54 @@ func downloadErrorHandler(err error) {
 	}
 }
 
+func processURI(uri string)(uritype,id string,err error){
+	errInvalidURI:=errors.New("invalid uri")
+	ress:=strings.Split(uri,":")
+	if len(ress)!=3||ress[0]!="spotify"{
+		err=errInvalidURI
+		return
+	}
+	
+	switch ress[1]{
+		case "track","album","playlist":
+		uritype=ress[1]
+		default:
+		err=errInvalidURI
+		return
+	}
+	
+	id=ress[2]
+	return
+}
+	
 func downloadWithURLs() {
 	tmp := getURLsToDownload()
 	for _, v := range tmp {
-		str := strings.TrimPrefix(v, "https://open.spotify.com/")
-		methodAndURI := strings.Split(str, "/")
-		if len(methodAndURI) != 2 {
+		//str := strings.TrimPrefix(v, "https://open.spotify.com/")
+		//methodAndURI := strings.Split(str, "/")
+		//if len(methodAndURI) != 2 {
+		//	logger.Println("error occur while parsing URI : invalid URI", v)
+		//	continue
+		//}
+		//switch methodAndURI[0] {
+		
+		uritype,id,err:=processURI(v)
+		if err!=nil{
 			logger.Println("error occur while parsing URI : invalid URI", v)
 			continue
 		}
-		switch methodAndURI[0] {
+		switch uritype{
 		case "album":
 			if *albumURIsToDownload != "" {
 				*albumURIsToDownload += ","
 			}
-			*albumURIsToDownload += methodAndURI[1]
+			*albumURIsToDownload += id
 			break
 		case "track":
 			if *trackURIsToDownload != "" {
 				*trackURIsToView += ","
 			}
-			*trackURIsToDownload += methodAndURI[1]
+			*trackURIsToDownload += id
 			break
 		//case "playlist":
 		//	if *playlistURIsToView != "" {
@@ -605,36 +632,42 @@ func doViewRootPlayLists() {
 func viewWithURLs() {
 	tmp := getURLsToView()
 	for _, v := range tmp {
-		str := strings.TrimPrefix(v, "https://open.spotify.com/")
-		methodAndURI := strings.Split(str, "/")
-		if len(methodAndURI) != 2 {
+		//str := strings.TrimPrefix(v, "https://open.spotify.com/")
+		//methodAndURI := strings.Split(str, "/")
+		//if len(methodAndURI) != 2 {
+		//	logger.Println("error occur while parsing URI : invalid URI", v)
+		//	continue
+		//}
+		//switch methodAndURI[0] {
+		uritype,id,err:=processURI(v)
+		if err!=nil{
 			logger.Println("error occur while parsing URI : invalid URI", v)
 			continue
 		}
-		switch methodAndURI[0] {
+		switch uritype{
 		case "album":
 			if *albumURIsToView != "" {
 				*albumURIsToView += ","
 			}
-			*albumURIsToView += methodAndURI[1]
+			*albumURIsToView += id
 			break
 		case "track":
 			if *trackURIsToView != "" {
 				*trackURIsToView += ","
 			}
-			*trackURIsToView += methodAndURI[1]
+			*trackURIsToView += id
 			break
 		case "artist":
 			if *artistURIsToView != "" {
 				*albumURIsToView += ","
 			}
-			*artistURIsToView += methodAndURI[1]
+			*artistURIsToView += id
 			break
 		case "playlist":
 			if *playlistURIsToView != "" {
 				*playlistURIsToView += ","
 			}
-			*playlistURIsToView += methodAndURI[1]
+			*playlistURIsToView += id
 			break
 		default:
 			logger.Println("error occur while parsing URI : invalid URI", v)

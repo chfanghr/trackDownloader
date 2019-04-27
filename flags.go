@@ -18,7 +18,7 @@ var (
 	trackURIsToView        = flag.String("viewTrack", "", "URIs of tracks to view,split by \",\"")
 	artistURIsToView       = flag.String("viewArtist", "", "URIs of artists to view,split by \",\"")
 	playlistURIsToView     = flag.String("viewPlaylist", "", "URIs of playlists to view,split by \",\"")
-	URLsToView             = flag.String("view", "", "URIs to view,begin with https://open.spotify.com/,split by \",\"")
+	URLsToView             = flag.String("view", "", "URIs to view,with format spotify:xxx:xxx,split by \",\"")
 	trackURIsToDownload    = flag.String("downloadTrack", "", "URIs of tracks to download,split by \",\"")
 	albumURIsToDownload    = flag.String("downloadAlbum", "", "URIs of albums to download,split by \",\"")
 	playlistURIsToDownload = flag.String("downloadPlaylist", "", "URIs of playlists,split by \",\"")
