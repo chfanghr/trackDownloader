@@ -632,36 +632,42 @@ func doViewRootPlayLists() {
 func viewWithURLs() {
 	tmp := getURLsToView()
 	for _, v := range tmp {
-		str := strings.TrimPrefix(v, "https://open.spotify.com/")
-		methodAndURI := strings.Split(str, "/")
-		if len(methodAndURI) != 2 {
+		//str := strings.TrimPrefix(v, "https://open.spotify.com/")
+		//methodAndURI := strings.Split(str, "/")
+		//if len(methodAndURI) != 2 {
+		//	logger.Println("error occur while parsing URI : invalid URI", v)
+		//	continue
+		//}
+		//switch methodAndURI[0] {
+		uritype,id,err:=processURI(v)
+		if err!=nil{
 			logger.Println("error occur while parsing URI : invalid URI", v)
 			continue
 		}
-		switch methodAndURI[0] {
+		switch uritype{
 		case "album":
 			if *albumURIsToView != "" {
 				*albumURIsToView += ","
 			}
-			*albumURIsToView += methodAndURI[1]
+			*albumURIsToView += id
 			break
 		case "track":
 			if *trackURIsToView != "" {
 				*trackURIsToView += ","
 			}
-			*trackURIsToView += methodAndURI[1]
+			*trackURIsToView += id
 			break
 		case "artist":
 			if *artistURIsToView != "" {
 				*albumURIsToView += ","
 			}
-			*artistURIsToView += methodAndURI[1]
+			*artistURIsToView += id
 			break
 		case "playlist":
 			if *playlistURIsToView != "" {
 				*playlistURIsToView += ","
 			}
-			*playlistURIsToView += methodAndURI[1]
+			*playlistURIsToView += id
 			break
 		default:
 			logger.Println("error occur while parsing URI : invalid URI", v)
