@@ -30,7 +30,7 @@ var (
 	vorbisPath                        = ""
 	//globalContext     context.Context    = nil
 	cancelFunc  context.CancelFunc       = nil
-	version                              = "DEBUG"
+	version                              = "1.0.0"
 	realQuality Spotify.AudioFile_Format = Spotify.AudioFile_OGG_VORBIS_320
 	nullDevPath                          = os.DevNull
 )
@@ -717,15 +717,15 @@ func waitForDownloadJobDone() {
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "TrackDownloader version : %s", version)
+		fmt.Fprintf(flag.CommandLine.Output(), "TrackDownloader version : %s\n", version)
 		fmt.Fprintf(flag.CommandLine.Output(), "Usage of trackDownloader :\n")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
 	setupLogger()
 	logger.Println("program version :", version)
-	logger.Println("warning : at this time the program only support current user's playlist")
-	logger.Println("source code hosted on https://github.com/chfanghr")
+	//logger.Println("warning : at this time the program only support current user's playlist")
+	logger.Println("source code hosted on https://github.com/chfanghr/trackDownloader")
 	login()
 
 	if *viewRootPlaylist {
