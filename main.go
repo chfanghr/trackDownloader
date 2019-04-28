@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"flag"
@@ -14,7 +13,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"os/signal"
 	"strings"
 	"sync"
@@ -242,33 +240,33 @@ func login() {
 //	globalContext, cancelFunc = context.WithCancel(context.TODO())
 //}
 
-func checkVorbisCommment() {
-	logger.Println("checking vorbisComment")
-	if *vorbisComment == "" {
-		logger.Fatalln("please provide a valid path to vorbisComment executable file")
-	} else {
-		path, err := exec.LookPath(*vorbisComment)
-		if err != nil {
-			logger.Fatalln("please provide a valid path to vorbisComment executable")
-		}
-		cmd := exec.Command(path, "-V")
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		cmd.Stderr = &out
-		err = cmd.Run()
-		if err != nil {
-			logger.Fatalln(" error occur while checking vorbisComment : ", err)
-		}
-		output := out.String()
-		outputStrs := strings.Fields(string(output))
-		if outputStrs[0] == "vorbiscomment" && outputStrs[1] == "from" && outputStrs[2] == "vorbis-tools" {
-			logger.Println("using vobisComment version", outputStrs[3])
-		} else {
-			logger.Fatalln("error occur while checking vorbisComment :", errors.New("unknown vorbisComment version"))
-		}
-		vorbisPath = path
-	}
-}
+//func checkVorbisCommment() {
+//	logger.Println("checking vorbisComment")
+//	if *vorbisComment == "" {
+//		logger.Fatalln("please provide a valid path to vorbisComment executable file")
+//	} else {
+//		path, err := exec.LookPath(*vorbisComment)
+//		if err != nil {
+//			logger.Fatalln("please provide a valid path to vorbisComment executable")
+//		}
+//		cmd := exec.Command(path, "-V")
+//		var out bytes.Buffer
+//		cmd.Stdout = &out
+//		cmd.Stderr = &out
+//		err = cmd.Run()
+//		if err != nil {
+//			logger.Fatalln(" error occur while checking vorbisComment : ", err)
+//		}
+//		output := out.String()
+//		outputStrs := strings.Fields(string(output))
+//		if outputStrs[0] == "vorbiscomment" && outputStrs[1] == "from" && outputStrs[2] == "vorbis-tools" {
+//			logger.Println("using vobisComment version", outputStrs[3])
+//		} else {
+//			logger.Fatalln("error occur while checking vorbisComment :", errors.New("unknown vorbisComment version"))
+//		}
+//		vorbisPath = path
+//	}
+//}
 
 func setRealQuality() {
 	switch *quality {
@@ -680,7 +678,7 @@ func downloadTracks() {
 	defer logger.SetPrefix(*deviceName + " ")
 	defer logger.SetFlags(log.LstdFlags)
 	setupDownloadWaitGroup()
-	checkVorbisCommment()
+	//checkVorbisCommment()
 	setRealQuality()
 	//setupContext()
 	loadDownloadJobs()

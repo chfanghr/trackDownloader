@@ -96,7 +96,7 @@ func downloadTrackInternal(track *Spotify.Track) error {
 			if err != nil {
 				return err
 			}
-			aiffEncoder := aiff.NewEncoder(outputFile, format.SampleRate, format.Bitrate.Maximum, format.Channels)
+			aiffEncoder := aiff.NewEncoder(outputFile, format.SampleRate, 16, format.Channels)
 			err = aiffEncoder.Write(f32Buf.AsIntBuffer())
 			if err != nil {
 				return err

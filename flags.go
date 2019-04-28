@@ -3,14 +3,14 @@ package main
 import "flag"
 
 var (
-	authBufFile            = flag.String("authBufFile", "", "path to authBuffer file")
-	authBufPassword        = flag.String("authBufPassword", "", "Password of authBuffer file")
-	username               = flag.String("username", "", "name of Spotify account")
-	password               = flag.String("password", "", "Password of Spotify account")
-	deviceName             = flag.String("deviceName", "trackdl", "name of device")
-	logFile                = flag.String("logFile", "", "path to log file")
-	saveFileTo             = flag.String("saveFileTo", "./", "path to save audio file")
-	vorbisComment          = flag.String("vorbisComment", "./vorbiscomment", "path to vorbisComment executable file")
+	authBufFile = flag.String("authBufFile", "", "path to authBuffer file")
+	//authBufPassword        = flag.String("authBufPassword", "", "Password of authBuffer file")
+	username   = flag.String("username", "", "name of Spotify account")
+	password   = flag.String("password", "", "Password of Spotify account")
+	deviceName = flag.String("deviceName", "trackdl", "name of device")
+	logFile    = flag.String("logFile", "", "path to log file")
+	saveFileTo = flag.String("saveFileTo", "./", "path to save audio file")
+	//vorbisComment          = flag.String("vorbisComment", "./vorbiscomment", "path to vorbisComment executable file")
 	saveAuthBufTo          = flag.String("saveAuthBufTo", "", "path to save authBuffer")
 	saveAuthBufPassword    = flag.String("saveAuthBufPassword", RandStringRunes(5), "Password of saved authBuffer file")
 	targetsToSearch        = flag.String("search", "", "targets to search for,split by \",\"")
