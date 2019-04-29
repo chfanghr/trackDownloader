@@ -1,13 +1,34 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/chfanghr/librespot/Spotify"
-	"github.com/go-audio/wav"
+	"github.com/go-audio/aiff"
+	"github.com/go-audio/audio"
 	"github.com/jfreymuth/oggvorbis"
 	"os"
 )
+
+func PCMF32ToI16(f32Buf []float32) (i16Buf []int16) {
+	for _, v := range f32Buf {
+		sample := v * 32767
+		if sample > 32767 {
+			sample = 32767
+		}
+		if sample < -32767 {
+			sample = -32767
+		}
+		i16Buf = append(i16Buf, int16(sample))
+	}
+	return
+}
+
+func PCMI16TOInt(i16Buf []int16) (intBuf []int) {
+	for _, v := range i16Buf {
+		intBuf = append(intBuf, int(v))
+	}
+	return
+}
 
 type Track struct {
 	ISRC string
@@ -73,84 +94,45 @@ func downloadTrackInternal(track *Spotify.Track) error {
 		if err != nil {
 			return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
 		} else {
-			f32buf,format,err:=oggvorbis.ReadAll(audioFile)
-			if err!=nil{
-				return err
+			makeError := func(err error) error { return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err) }
+			decodedPCM, format, err := oggvorbis.ReadAll(audioFile)
+			if err != nil {
+				return makeError(err)
 			}
-
-
-			outputFile := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName() + "-" + RandStringRunes(10) + ".wav"
-
-			file,err:=os.OpenFile(outputFile,os.O_CREATE|os.O_TRUNC|os.O_RDWR,0600)
-			if err!=nil{return err}
-			enc:=wav.NewEncoder(file,format.SampleRate,format.Bitrate.Nominal/10000,format.Channels,1)
-			enc.AddBE()
-			//buf, err := ioutil.ReadAll(audioFile)
-			//if err != nil {
-			//	return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
-			//}
-
-			//logger.Println(track.GetName(), "fetched successfully")
-			//
-			//outputFile := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName() + "-" + RandStringRunes(10) + ".ogg"
-			//
-			//err = ioutil.WriteFile(outputFile, buf, 0666)
-			//if err != nil {
-			//	return fmt.Errorf("error occur while saving %s : %s", track.GetName(), err)
-			//}
-
-			//var metadata string
-			//metadata = metadata + "ALBUM=" + track.Album.GetName() + "\n"
-			//metadata = metadata + "ARTIST=" + func() string {
-			//	var res string
-			//	for i, artist := range track.GetAlbum().GetArtist() {
-			//		if i != 0 {
-			//			res += ","
-			//		}
-			//		res += artist.GetName()
-			//	}
-			//	return res
-			//}() + "\n"
-			//metadata = metadata + "TITLE=" + track.GetName() + "\n"
-			//metadata = metadata + "GENRE=" + func() string {
-			//	var res string
-			//	for i, v := range track.Album.GetGenre() {
-			//		if i > 0 {
-			//			res += ","
-			//		}
-			//		res += v
-			//	}
-			//	return res
-			//
-			//}() + "\n"
-			//metadata = metadata + "DATE=" + track.GetAlbum().GetDate().String() + "\n"
-			//metadata = metadata + "COPYRIGHT=" + func() string {
-			//	var res string
-			//	for i, v := range track.GetAlbum().GetCopyright() {
-			//		if i > 0 {
-			//			res += ","
-			//		}
-			//		res += v.GetText()
-			//	}
-			//	return res
-			//}()
-			//
-			////tmpMetadataFile := *saveFileTo + "/." + RandStringRunes(10) + ".metadata"
-			//if version != "DEBUG" {
-			//defer os.Remove(tmpMetadataFile)
-			//}
-			//err = ioutil.WriteFile(tmpMetadataFile, []byte(metadata), 0666)
-			//if err != nil {
-			//	return fmt.Errorf("error occur while writing metadata to track %s : %s", track.GetName(), err)
-			//}
-
-			//vorbisCommentCommand := exec.Command(vorbisPath, "-a", outputFile, "-c", tmpMetadataFile)
-			//err = vorbisCommentCommand.Run()
-			//
-			//if err != nil {
-			//	return fmt.Errorf("error occur while writing metadata to track %s : %s", track.GetName(), err)
-			//}
-
+			logger.Println(track.GetName(), "fetched successfully")
+			intPCMBuf := PCMI16TOInt(PCMF32ToI16(decodedPCM))
+			// bitrate:=format.Bitrate
+			channels := format.Channels
+			sampleRate := format.SampleRate
+			intBuffer := &audio.IntBuffer{
+				Data: intPCMBuf,
+				Format: &audio.Format{
+					NumChannels: channels,
+					SampleRate:  sampleRate,
+				},
+				SourceBitDepth: 16,
+			}
+			outputName := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName()
+		try:
+			outAiff, err := os.Create(outputName + ".aiff")
+			if err != nil {
+				if os.IsExist(err) {
+					outputName += RandStringRunes(3) + ".aiff"
+					goto try
+				} else {
+					return makeError(err)
+				}
+			}
+			aiffEncoder := aiff.NewEncoder(outAiff, sampleRate, 16, channels)
+			err = aiffEncoder.Write(intBuffer)
+			if err != nil {
+				return makeError(err)
+			}
+			err = aiffEncoder.Close()
+			if err != nil {
+				return makeError(err)
+			}
+			//TODO write metadata to saved file
 			logger.Println(track.GetName(), "downloaded successfully")
 			return nil
 		}

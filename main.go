@@ -13,10 +13,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/signal"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
@@ -305,9 +303,9 @@ func getAlbumsURIsToDownload() []string {
 	return strings.Split(*albumURIsToDownload, ",")
 }
 
-func getTracksURIsInsidePlaylistToDownload() []string {
-	return strings.Split(*playlistURIsToDownload, ",")
-}
+//func getTracksURIsInsidePlaylistToDownload() []string {
+//	return strings.Split(*playlistURIsToDownload, ",")
+//}
 
 func getSearchTargets() []string {
 	return strings.Split(*targetsToSearch, ",")
@@ -687,30 +685,30 @@ func downloadTracks() {
 	downloadWaitGroup.Wait()
 }
 
-func waitForDownloadJobDone() {
-	signalChan := make(chan os.Signal)
-	signal.Ignore(syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGABRT, syscall.SIGQUIT)
-	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGABRT, syscall.SIGQUIT)
-
-	jobChan := func() (tmp chan int) {
-		go func() {
-			downloadWaitGroup.Wait()
-			tmp <- 0
-		}()
-		return
-	}()
-	<-time.After(time.Second)
-	select {
-	case sig := <-signalChan:
-		logger.Println("receive signal :", sig)
-		cancelFunc()
-		logger.Println("all download job canceled")
-		return
-	case <-jobChan:
-		logger.Println("all download job done")
-		return
-	}
-}
+//func waitForDownloadJobDone() {
+//	signalChan := make(chan os.Signal)
+//	signal.Ignore(syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGABRT, syscall.SIGQUIT)
+//	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGABRT, syscall.SIGQUIT)
+//
+//	jobChan := func() (tmp chan int) {
+//		go func() {
+//			downloadWaitGroup.Wait()
+//			tmp <- 0
+//		}()
+//		return
+//	}()
+//	<-time.After(time.Second)
+//	select {
+//	case sig := <-signalChan:
+//		logger.Println("receive signal :", sig)
+//		cancelFunc()
+//		logger.Println("all download job canceled")
+//		return
+//	case <-jobChan:
+//		logger.Println("all download job done")
+//		return
+//	}
+//}
 
 func main() {
 	flag.Usage = func() {
