@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -22,9 +21,9 @@ var (
 	logger            *log.Logger     = nil
 	session           *core.Session   = nil
 	downloadWaitGroup *sync.WaitGroup = nil
-	vorbisPath                        = ""
+	//vorbisPath                        = ""
 	//globalContext     context.Context    = nil
-	cancelFunc  context.CancelFunc       = nil
+	//cancelFunc  context.CancelFunc       = nil
 	version                              = "DEBUG"
 	realQuality Spotify.AudioFile_Format = Spotify.AudioFile_OGG_VORBIS_320
 	nullDevPath                          = os.DevNull
