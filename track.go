@@ -9,27 +9,6 @@ import (
 	"os"
 )
 
-func PCMF32ToI16(f32Buf []float32) (i16Buf []int16) {
-	for _, v := range f32Buf {
-		sample := v * 32767
-		if sample > 32767 {
-			sample = 32767
-		}
-		if sample < -32767 {
-			sample = -32767
-		}
-		i16Buf = append(i16Buf, int16(sample))
-	}
-	return
-}
-
-func PCMI16TOInt(i16Buf []int16) (intBuf []int) {
-	for _, v := range i16Buf {
-		intBuf = append(intBuf, int(v))
-	}
-	return
-}
-
 type Track struct {
 	ISRC string
 
