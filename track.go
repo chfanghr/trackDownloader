@@ -92,10 +92,11 @@ func downloadTrackInternal(track *Spotify.Track) error {
 				SourceBitDepth: format.Bitrate.Maximum,
 			}
 			outputFileName := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName() + "-" + RandStringRunes(10) + ".aiff" //TODO
-			outputFile, err := os.OpenFile(outputFileName, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 666)
+			outputFile, err := os.OpenFile(outputFileName, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 666)
 			if err != nil {
 				return err
 			}
+			//TODO FIX BUGGY CODE HERE
 			aiffEncoder := aiff.NewEncoder(outputFile, format.SampleRate, 16, format.Channels)
 			err = aiffEncoder.Write(f32Buf.AsIntBuffer())
 			if err != nil {
