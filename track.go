@@ -1,12 +1,11 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/chfanghr/librespot/Spotify"
-	"github.com/go-audio/aiff"
-	"github.com/go-audio/audio"
+	"github.com/go-audio/wav"
 	"github.com/jfreymuth/oggvorbis"
-	"io"
 	"os"
 )
 
@@ -74,39 +73,18 @@ func downloadTrackInternal(track *Spotify.Track) error {
 		if err != nil {
 			return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
 		} else {
-			format, err := oggvorbis.GetFormat(audioFile)
-			if err != nil {
-				return err
-			} //TODO
-			_, err = audioFile.Seek(0, io.SeekStart)
-			if err != nil {
-				return err
-			} //TODO
-			buf, _, err := oggvorbis.ReadAll(audioFile)
-			if err != nil {
-				return err
-			} //TODO
-			f32Buf := audio.Float32Buffer{
-				Format:         &audio.Format{NumChannels: format.Channels, SampleRate: format.SampleRate},
-				Data:           buf,
-				SourceBitDepth: format.Bitrate.Maximum,
-			}
-			outputFileName := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName() + "-" + RandStringRunes(10) + ".aiff" //TODO
-			outputFile, err := os.OpenFile(outputFileName, os.O_CREATE|os.O_TRUNC|os.O_RDWR, 666)
-			if err != nil {
+			f32buf,format,err:=oggvorbis.ReadAll(audioFile)
+			if err!=nil{
 				return err
 			}
-			//TODO FIX BUGGY CODE HERE
-			aiffEncoder := aiff.NewEncoder(outputFile, format.SampleRate, 16, format.Channels)
-			err = aiffEncoder.Write(f32Buf.AsIntBuffer())
-			if err != nil {
-				return err
-			} //TODO
-			err = aiffEncoder.Close()
-			if err != nil {
-				return err
-			} //TODO
 
+
+			outputFile := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName() + "-" + RandStringRunes(10) + ".wav"
+
+			file,err:=os.OpenFile(outputFile,os.O_CREATE|os.O_TRUNC|os.O_RDWR,0600)
+			if err!=nil{return err}
+			enc:=wav.NewEncoder(file,format.SampleRate,format.Bitrate.Nominal/10000,format.Channels,1)
+			enc.AddBE()
 			//buf, err := ioutil.ReadAll(audioFile)
 			//if err != nil {
 			//	return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
