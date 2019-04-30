@@ -80,6 +80,7 @@ buf,err:=ioutil.ReadAll(audioFile)
 if err!=nil{return makeError(err)}
 err=ioutil.WriteFile( *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName()+ ".ogg",buf,0666)
 if err!=nil{return makeError(err)}
+_=audioFile.Seek(0,io.SeekStart)
 			}
 			decodedPCM, format, err := oggvorbis.ReadAll(audioFile)
 			if err != nil {
