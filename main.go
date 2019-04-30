@@ -58,20 +58,12 @@ func processURI(uri string) (uritype, id string, err error) {
 func downloadWithURLs() {
 	tmp := getURLsToDownload()
 	for _, v := range tmp {
-		//str := strings.TrimPrefix(v, "https://open.spotify.com/")
-		//methodAndURI := strings.Split(str, "/")
-		//if len(methodAndURI) != 2 {
-		//	logger.Println("error occur while parsing URI : invalid URI", v)
-		//	continue
-		//}
-		//switch methodAndURI[0] {
-
-		uritype, id, err := processURI(v)
+		uriType, id, err := processURI(v)
 		if err != nil {
 			logger.Println("error occur while parsing URI : invalid URI", v)
 			continue
 		}
-		switch uritype {
+		switch uriType {
 		case "album":
 			if *albumURIsToDownload != "" {
 				*albumURIsToDownload += ","
@@ -141,12 +133,7 @@ func downloadTrack(id string) error {
 	if track.GetName() == "" {
 		return fmt.Errorf("error occur while loading track %s : fail to get track", id)
 	}
-	if *downloadOneByOne {
-		return downloadTrackInternal(track)
-	} else {
-		go downloadTrackInternal(track)
-	}
-	return nil
+	return downloadTrackInternal(track)
 }
 
 func setupLogger() {
@@ -180,11 +167,6 @@ func login() {
 		if err != nil {
 			logger.Fatalln("error occur while reading authBuffer file :", err)
 		}
-		//ab := &authBuf{}
-		//err = ab.Decrypt(*authBufPassword, buf)
-		//if err != nil {
-		//	logger.Fatalln("error occur while reading authBuffer file :", err)
-		//}
 		*username, *password, err = UnpackAuthBuf(buf)
 		logger.Println(*username, "login with authBuffer")
 		if err != nil {
@@ -232,38 +214,6 @@ func login() {
 		logger.Println("authBuffer successfully saved")
 	}
 }
-
-//func setupContext() {
-//	globalContext, cancelFunc = context.WithCancel(context.TODO())
-//}
-
-//func checkVorbisCommment() {
-//	logger.Println("checking vorbisComment")
-//	if *vorbisComment == "" {
-//		logger.Fatalln("please provide a valid path to vorbisComment executable file")
-//	} else {
-//		path, err := exec.LookPath(*vorbisComment)
-//		if err != nil {
-//			logger.Fatalln("please provide a valid path to vorbisComment executable")
-//		}
-//		cmd := exec.Command(path, "-V")
-//		var out bytes.Buffer
-//		cmd.Stdout = &out
-//		cmd.Stderr = &out
-//		err = cmd.Run()
-//		if err != nil {
-//			logger.Fatalln(" error occur while checking vorbisComment : ", err)
-//		}
-//		output := out.String()
-//		outputStrs := strings.Fields(string(output))
-//		if outputStrs[0] == "vorbiscomment" && outputStrs[1] == "from" && outputStrs[2] == "vorbis-tools" {
-//			logger.Println("using vobisComment version", outputStrs[3])
-//		} else {
-//			logger.Fatalln("error occur while checking vorbisComment :", errors.New("unknown vorbisComment version"))
-//		}
-//		vorbisPath = path
-//	}
-//}
 
 func setRealQuality() {
 	switch *quality {
@@ -623,16 +573,9 @@ func doViewRootPlayLists() {
 	logger.Println("end of viewing root playlist")
 }
 
-func viewWithURLs() {
+func viewWithURIs() {
 	tmp := getURLsToView()
 	for _, v := range tmp {
-		//str := strings.TrimPrefix(v, "https://open.spotify.com/")
-		//methodAndURI := strings.Split(str, "/")
-		//if len(methodAndURI) != 2 {
-		//	logger.Println("error occur while parsing URI : invalid URI", v)
-		//	continue
-		//}
-		//switch methodAndURI[0] {
 		uritype, id, err := processURI(v)
 		if err != nil {
 			logger.Println("error occur while parsing URI : invalid URI", v)
@@ -675,44 +618,16 @@ func downloadTracks() {
 	defer logger.SetPrefix(*deviceName + " ")
 	defer logger.SetFlags(log.LstdFlags)
 	setupDownloadWaitGroup()
-	//checkVorbisCommment()
 	setRealQuality()
-	//setupContext()
 	loadDownloadJobs()
-	//waitForDownloadJobDone()
 	time.Sleep(time.Second)
 	downloadWaitGroup.Wait()
 }
 
-//func waitForDownloadJobDone() {
-//	signalChan := make(chan os.Signal)
-//	signal.Ignore(syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGABRT, syscall.SIGQUIT)
-//	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL, syscall.SIGABRT, syscall.SIGQUIT)
-//
-//	jobChan := func() (tmp chan int) {
-//		go func() {
-//			downloadWaitGroup.Wait()
-//			tmp <- 0
-//		}()
-//		return
-//	}()
-//	<-time.After(time.Second)
-//	select {
-//	case sig := <-signalChan:
-//		logger.Println("receive signal :", sig)
-//		cancelFunc()
-//		logger.Println("all download job canceled")
-//		return
-//	case <-jobChan:
-//		logger.Println("all download job done")
-//		return
-//	}
-//}
-
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "TrackDownloader version : %s\n", version)
-		fmt.Fprintf(flag.CommandLine.Output(), "Usage of trackDownloader :\n")
+		_, _ = fmt.Fprintf(flag.CommandLine.Output(), "TrackDownloader version : %s\n", version)
+		_, _ = fmt.Fprintf(flag.CommandLine.Output(), "Usage of trackDownloader :\n")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
@@ -727,7 +642,7 @@ func main() {
 	}
 
 	if *URLsToView != "" {
-		viewWithURLs()
+		viewWithURIs()
 	}
 
 	if *artistURIsToView != "" {
