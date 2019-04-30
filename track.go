@@ -78,7 +78,7 @@ func downloadTrackInternal(track *Spotify.Track) error {
 			if *saveOgg {
 buf,err:=ioutil.ReadAll(audioFile)
 if err!=nil{return makeError(err)}
-err=ioutil.WriteFile( *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName().ogg,buf,0666)
+err=ioutil.WriteFile( *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName()+ ".ogg",buf,0666)
 if err!=nil{return makeError(err)}
 			}
 			decodedPCM, format, err := oggvorbis.ReadAll(audioFile)
