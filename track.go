@@ -7,7 +7,7 @@ import (
 	"github.com/go-audio/audio"
 	"github.com/jfreymuth/oggvorbis"
 	"os"
-"io/ioutil "
+"io/ioutil"
 "io"
 )
 
