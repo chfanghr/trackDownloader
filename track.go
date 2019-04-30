@@ -7,7 +7,8 @@ import (
 	"github.com/go-audio/audio"
 	"github.com/jfreymuth/oggvorbis"
 	"os"
-"ioutil"
+"io/ioutil "
+"io"
 )
 
 type Track struct {
