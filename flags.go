@@ -24,6 +24,7 @@ var (
 	quality             = flag.Int("-quality", 320, "quality of audio file")
 	viewRootPlaylist    = flag.Bool("-viewRootPlaylists", false, "view root playlist or not")
 	quiet               = flag.Bool("-quiet", false, "output log to stdout or not")
+	saveOgg             = flag.Bool("-saveOgg", false, "save orginal ogg data for higher quality")
 )
 
 var downloadOneByOne = func() *bool {

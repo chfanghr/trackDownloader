@@ -74,6 +74,8 @@ func downloadTrackInternal(track *Spotify.Track) error {
 			return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
 		} else {
 			makeError := func(err error) error { return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err) }
+			if *saveOgg {
+			}
 			decodedPCM, format, err := oggvorbis.ReadAll(audioFile)
 			if err != nil {
 				return makeError(err)
