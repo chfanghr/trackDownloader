@@ -7,6 +7,7 @@ import (
 	"github.com/go-audio/audio"
 	"github.com/jfreymuth/oggvorbis"
 	"os"
+"ioutil"
 )
 
 type Track struct {
@@ -75,6 +76,10 @@ func downloadTrackInternal(track *Spotify.Track) error {
 		} else {
 			makeError := func(err error) error { return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err) }
 			if *saveOgg {
+buf,err:=ioutil.ReadAll(audioFile)
+if err!=nil{return makeError(err)}
+err=ioutil.WriteFile( *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName().ogg,buf,0666)
+if err!=nil{return makeError(err)}
 			}
 			decodedPCM, format, err := oggvorbis.ReadAll(audioFile)
 			if err != nil {
