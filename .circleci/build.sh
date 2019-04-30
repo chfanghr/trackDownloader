@@ -5,7 +5,9 @@ sudo chmod +666 /build
 GO111MODULE=on go get -d ./...
 
 go_build(){
-GO111MODULE=on GOOS=$1 GOARCH=$2 go build -o /build/$1_$2 $3
+local sf=“”
+for “windows” in $1 ;do sf=“.exe”;done
+GO111MODULE=on GOOS=$1 GOARCH=$2 go build -o /build/$1_$2$sf $3
 }
 
 go_build "linux" "amd64" $1
