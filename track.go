@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type Track struct {
@@ -108,6 +109,7 @@ func downloadTrackInternal(track *Spotify.Track) error {
 				SourceBitDepth: 16,
 			}
 			outputName := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName()
+			outputName = strings.ReplaceAll(outputName, ":", "x")
 		try:
 			outAiff, err := os.Create(outputName + ".aiff")
 			if err != nil {
