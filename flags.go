@@ -25,6 +25,7 @@ var (
 	viewRootPlaylist    = flag.Bool("viewRootPlaylists", false, "view root playlist or not")
 	quiet               = flag.Bool("quiet", false, "output log to stdout or not")
 	saveOgg             = flag.Bool("saveOgg", false, "save orginal ogg data for higher quality")
+	simpleFileName	    = flag.Bool("simpleName",false,"")//TODO
 )
 
 var downloadOneByOne = func() *bool {
