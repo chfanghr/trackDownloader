@@ -77,10 +77,10 @@ func downloadTrackInternal(track *Spotify.Track) error {
 			return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
 		} else {
 			var baseName string
-			if *simpleFileName{
-				baseName=*saveFileTo+"/"+track.GetName()
-			}else{
-				baseName=*saveFileTo+"/"+track.GetAlbum().GetName()+"-"+track.GetName()
+			if *simpleFileName {
+				baseName = *saveFileTo + "/" + track.GetName()
+			} else {
+				baseName = *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName()
 			}
 			baseName = strings.ReplaceAll(baseName, ":", "_")
 			makeError := func(err error) error { return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err) }
