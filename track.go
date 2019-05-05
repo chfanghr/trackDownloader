@@ -76,13 +76,20 @@ func downloadTrackInternal(track *Spotify.Track) error {
 		if err != nil {
 			return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err)
 		} else {
+			var baseName string
+			if *simpleFileName{
+				baseName=*saveFileTo+"/"+track.GetName()
+			}else{
+				baseName=*saveFileTo+"/"+track.GetAlbum().GetName()+"-"+track.GetName()
+			}
+			baseName = strings.ReplaceAll(baseName, ":", "_")
 			makeError := func(err error) error { return fmt.Errorf("error occur while fetching %s : %s", track.GetName(), err) }
 			if *saveOgg {
 				buf, err := ioutil.ReadAll(audioFile)
 				if err != nil {
 					return makeError(err)
 				}
-				err = ioutil.WriteFile(*saveFileTo+"/"+track.GetAlbum().GetName()+"-"+track.GetName()+".ogg", buf, 0666)
+				err = ioutil.WriteFile(baseName+".ogg", buf, 0666)
 				if err != nil {
 					return makeError(err)
 				}
@@ -108,13 +115,11 @@ func downloadTrackInternal(track *Spotify.Track) error {
 				},
 				SourceBitDepth: 16,
 			}
-			outputName := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName()
-			outputName = strings.ReplaceAll(outputName, ":", "x")
 		try:
-			outAiff, err := os.Create(outputName + ".aiff")
+			outAiff, err := os.Create(baseName + ".aiff")
 			if err != nil {
 				if os.IsExist(err) {
-					outputName += RandStringRunes(3) + ".aiff"
+					baseName += RandStringRunes(3) + ".aiff"
 					goto try
 				} else {
 					return makeError(err)
