@@ -620,7 +620,7 @@ func downloadTracks() {
 	setupDownloadWaitGroup()
 	setRealQuality()
 	loadDownloadJobs()
-	time.Sleep(time.Second)
+	time.Sleep(time.Second) //TODO
 	downloadWaitGroup.Wait()
 }
 
