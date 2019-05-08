@@ -1,14 +1,14 @@
 package main
 
-//v2 
+//v2
 import (
 	"bytes"
 	"context"
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/chfanghr/librespot/Spotify"
 	"github.com/chfanghr/librespot"
+	"github.com/chfanghr/librespot/Spotify"
 	"github.com/chfanghr/librespot/core"
 	"github.com/chfanghr/librespot/utils"
 	"io"
@@ -41,26 +41,26 @@ func downloadErrorHandler(err error) {
 	}
 }
 
-func processURI(uri string)(uritype,id string,err error){
-	errInvalidURI:=errors.New("invalid uri")
-	ress:=strings.Split(uri,":")
-	if len(ress)!=3||ress[0]!="spotify"{
-		err=errInvalidURI
+func processURI(uri string) (uritype, id string, err error) {
+	errInvalidURI := errors.New("invalid uri")
+	ress := strings.Split(uri, ":")
+	if len(ress) != 3 || ress[0] != "spotify" {
+		err = errInvalidURI
 		return
 	}
-	
-	switch ress[1]{
-		case "track","album","playlist":
-		uritype=ress[1]
-		default:
-		err=errInvalidURI
+
+	switch ress[1] {
+	case "track", "album", "playlist":
+		uritype = ress[1]
+	default:
+		err = errInvalidURI
 		return
 	}
-	
-	id=ress[2]
+
+	id = ress[2]
 	return
 }
-	
+
 func downloadWithURLs() {
 	tmp := getURLsToDownload()
 	for _, v := range tmp {
@@ -71,13 +71,13 @@ func downloadWithURLs() {
 		//	continue
 		//}
 		//switch methodAndURI[0] {
-		
-		uritype,id,err:=processURI(v)
-		if err!=nil{
+
+		uritype, id, err := processURI(v)
+		if err != nil {
 			logger.Println("error occur while parsing URI : invalid URI", v)
 			continue
 		}
-		switch uritype{
+		switch uritype {
 		case "album":
 			if *albumURIsToDownload != "" {
 				*albumURIsToDownload += ","
@@ -639,12 +639,12 @@ func viewWithURLs() {
 		//	continue
 		//}
 		//switch methodAndURI[0] {
-		uritype,id,err:=processURI(v)
-		if err!=nil{
+		uritype, id, err := processURI(v)
+		if err != nil {
 			logger.Println("error occur while parsing URI : invalid URI", v)
 			continue
 		}
-		switch uritype{
+		switch uritype {
 		case "album":
 			if *albumURIsToView != "" {
 				*albumURIsToView += ","

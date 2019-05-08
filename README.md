@@ -1,6 +1,6 @@
 # trackDownloader
 <!-- [![CircleCI](https://circleci.com/gh/chfanghr/trackDownloader.svg?style=svg)](https://circleci.com/gh/chfanghr/trackDownloader)-->
-[![CircleCI](https://circleci.com/gh/chfanghr/trackDownloader/tree/v1.0.0.svg?style=svg)](https://circleci.com/gh/chfanghr/trackDownloader/tree/v1.0.0)
+[![CircleCI](https://circleci.com/gh/chfanghr/trackDownloader/tree/v.svg?style=svg)](https://circleci.com/gh/chfanghr/trackDownloader/tree/v1)
 
 **WARNING :THIS IS JUST A TOY**
 <br>**DON'T OVERUSE IT!!!!!!**
@@ -28,5 +28,5 @@ the login account.
 ## License
 MIT,view [LICENSE](LICENSE) for details.
 
-## [Builds](https://circleci.com/api/v1.1/project/github/chfanghr/trackDownloader/latest/artifacts?filter=successful&branch=v1.0.0)
+## [Builds](https://circleci.com/api/v1.1/project/github/chfanghr/trackDownloader/latest/artifacts?filter=successful&branch=v1)
 Click to download nightly build.

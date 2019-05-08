@@ -79,7 +79,7 @@ func downloadTrackInternal(track *Spotify.Track) error {
 			}
 			logger.Println(track.GetName(), "fetched successfully")
 
-			outputFile := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName() + "-" + RandStringRunes(10) + ".ogg"
+			outputFile := *saveFileTo + "/" + track.GetAlbum().GetName() + "-" + track.GetName() + ".ogg"
 
 			err = ioutil.WriteFile(outputFile, buf, 0666)
 			if err != nil {
