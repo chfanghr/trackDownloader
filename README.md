@@ -1,6 +1,6 @@
 # trackDownloader
 <!-- [![CircleCI](https://circleci.com/gh/chfanghr/trackDownloader.svg?style=svg)](https://circleci.com/gh/chfanghr/trackDownloader)-->
-[![CircleCI](https://circleci.com/gh/chfanghr/trackDownloader/tree/v.svg?style=svg)](https://circleci.com/gh/chfanghr/trackDownloader/tree/v1)
+[![CircleCI](https://circleci.com/gh/chfanghr/trackDownloader/tree/v1.svg?style=svg)](https://circleci.com/gh/chfanghr/trackDownloader/tree/v1)
 
 **WARNING :THIS IS JUST A TOY**
 <br>**DON'T OVERUSE IT!!!!!!**
